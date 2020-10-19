@@ -52,7 +52,7 @@ Weights are saved after every epoch. If needed, you can easily restart the train
 ```
 python3 widerface.py train --model=last
 ```
-When training is complete and final model saved in [logs](logs), you can evaluate the results. Check trained model first by running file [inspect_model-wider.ipynb](samples/coco/inspect_model-wider.ipynb), then investigate results more thoroughly with:
+When training is complete and final model saved in *logs*, you can evaluate the results. Check trained model first by running file [inspect_model-wider.ipynb](samples/coco/inspect_model-wider.ipynb), then investigate results more thoroughly with:
 ```
 python3 widerface.py evaluate --model=last --limit=0
 ```
