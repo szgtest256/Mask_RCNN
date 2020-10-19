@@ -9,16 +9,16 @@ For GPU users:
 Example CUDA/CUDNN configuration:
 CUDA 10.1
 CUDNN 7.6.4
-Their versions need to be compatible with both tensorflow-gpu and keras versions. At least 6GB or more VRAM might be needed for training the model.
+Their versions need to be compatible with both tensorflow-gpu and keras versions. At least 6GB or more VRAM might be necessary to train the model.
 
 ```
-git clone [this repo]
+git clone https://github.com/szgtest/Mask_RCNN.git
 ```
 Create and activate python3.6 virtual environment, then:
 ```
 pip3 install -r requirements.txt
 # Additionally, we need to install pycocotools:
-git clone [mycoco]
+git clone https://github.com/szgtest/coco.git
 cd coco/PythonAPI
 make install
 cd ../../
@@ -31,11 +31,11 @@ python3 setup.py install
 Our objective is to use well-performing model for face detection (displaying confidence scores) in short videos.
 
 
-Download modified version of Wider Face dataset (out-of-bounds bboxes and negative examples removed) converted to COCO format: 
-TODO:link
+Download and extract modified version of Wider Face dataset (out-of-bounds bboxes and negative examples removed) converted to COCO format in [datasets](datasets): 
+https://drive.google.com/file/d/1jnf-XTzUMbjniBkZMjnNDXfiGDyXw8eW/view?usp=sharing
 
 
-I strongly advise to run 3 notebooks: [inspect_data-wider.ipynb](samples/coco/inspect_data-wider.ipynb),  [inspect_model-wider.ipynb](samples/coco/inspect_model-wider.ipynb), [inspect_weights-forwider.ipynb](samples/coco/inspect_weights-forwider.ipynb) to check for any errors before the training.
+I strongly advise to run 3 notebooks: [inspect_data-wider.ipynb](samples/coco/inspect_data-wider.ipynb),  [inspect_model.ipynb](samples/coco/inspect_model.ipynb), [inspect_weights-forwider.ipynb](samples/coco/inspect_weights-forwider.ipynb) to check for any errors before the training.
 Familiarize yourself with *Config* if i.e. you want to change *batch_size* or other variables.
 *config.GENERATE_MASKS=False* means, that network is downgraded to Faster R-CNN and therefore prepared for training on Wider Face dataset, which does not contain image segmentation.
 
@@ -56,6 +56,11 @@ When training is complete and final model saved in [logs](logs), you can evaluat
 ```
 python3 widerface.py evaluate --model=last --limit=0
 ```
+If you don't want to train a model or you simply want to compare models, I provide a few models trained on WiderFace to download. Extract them to [logs](logs):
+https://drive.google.com/file/d/1kXPfvilOYR2Cfsg93OitQUr8IAVwtY3y/view?usp=sharing
+Last model from previous tar archive:
+https://drive.google.com/file/d/17BLpt-rkOEQ4OP1BFzav4r4rXJGkD2mx/view?usp=sharing
+
 [This site](https://cocodataset.org/#detection-eval) explains the exact meaning of displayed shortcuts.
 # Face detection in videos and through webcam
 If results are deemed acceptable, trained model can be used to detect faces in downloaded videos. Firstly, ffmpeg package must be installed if you want to preserve audio after frame-by-frame detection (opencv doesn't have this functionality):
@@ -83,6 +88,14 @@ If you encounter problems with codecs or webcam, you can try to debug by running
 ```
 python3 ./try_video.py
 ```
+
+For comparison purposes, I provide some example videos to extract to [test_videos](test_videos):
+https://drive.google.com/file/d/1NSJS6PL3JJse3lkRIugJ4GrQb4_j99Dp/view?usp=sharing
+
+I hope, that this short guide was somehow helpful.
+
+*TODO: add celebA quick support*
+
 
 # Original README by *matterport*
 ![Instance Segmentation Sample](assets/street.png)
