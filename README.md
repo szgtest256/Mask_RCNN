@@ -31,12 +31,13 @@ python3 setup.py install
 Our objective is to use well-performing model for face detection (displaying confidence scores) in short videos.
 
 
-Download and extract modified version of Wider Face dataset (out-of-bounds bboxes and negative examples removed) converted to COCO format in *datasets*: 
+Download and extract modified version of Wider Face dataset (out-of-bounds bboxes and negative examples removed) converted to COCO format in *datasets*:   
 https://drive.google.com/file/d/1jnf-XTzUMbjniBkZMjnNDXfiGDyXw8eW/view?usp=sharing
 
 
-I strongly advise to run 3 notebooks: [inspect_data-wider.ipynb](samples/coco/inspect_data-wider.ipynb),  [inspect_model.ipynb](samples/coco/inspect_model.ipynb), [inspect_weights-forwider.ipynb](samples/coco/inspect_weights-forwider.ipynb) to check for any errors before the training.
-Familiarize yourself with *Config* if i.e. you want to change *batch_size* or other variables.
+I strongly advise to run 3 notebooks: [inspect_data-wider.ipynb](samples/coco/inspect_data-wider.ipynb),  [inspect_model.ipynb](samples/coco/inspect_model.ipynb), [inspect_weights-forwider.ipynb](samples/coco/inspect_weights-forwider.ipynb) to check for any errors before the training.  
+
+Familiarize yourself with *Config* if i.e. you want to change *batch_size* or other variables.  
 *config.GENERATE_MASKS=False* means, that network is downgraded to Faster R-CNN and therefore prepared for training on Wider Face dataset, which does not contain image segmentation.
 
 In addition, it is recommended to check if augmentation is suitable for your purposes (*load_image_gt* function in [model.py](mrcnn/model.py). If so, you can commence the training, starting from pre-trained COCO weights:
@@ -56,12 +57,13 @@ When training is complete and final model saved in *logs*, you can evaluate the 
 ```
 python3 widerface.py evaluate --model=last --limit=0
 ```
-If you don't want to train a model or you simply want to compare models, I provide a few models trained on WiderFace to download. Extract them to *logs*:
-https://drive.google.com/file/d/1kXPfvilOYR2Cfsg93OitQUr8IAVwtY3y/view?usp=sharing
-Last model from previous tar archive:
-https://drive.google.com/file/d/17BLpt-rkOEQ4OP1BFzav4r4rXJGkD2mx/view?usp=sharing
+[This site](https://cocodataset.org/#detection-eval) explains the exact meaning of displayed shortcuts. 
 
-[This site](https://cocodataset.org/#detection-eval) explains the exact meaning of displayed shortcuts.
+If you don't want to train a model or you simply want to compare models, I provide a few models trained on WiderFace to download. Extract them to *logs*:  
+https://drive.google.com/file/d/1kXPfvilOYR2Cfsg93OitQUr8IAVwtY3y/view?usp=sharing  
+Last model from previous tar archive:  
+https://drive.google.com/file/d/17BLpt-rkOEQ4OP1BFzav4r4rXJGkD2mx/view?usp=sharing
+ 
 # Face detection in videos and through webcam
 If results are deemed acceptable, trained model can be used to detect faces in downloaded videos. Firstly, ffmpeg package must be installed if you want to preserve audio after frame-by-frame detection (opencv doesn't have this functionality):
 ```
@@ -71,7 +73,7 @@ sudo apt install ffmpeg
 ls -ltrh /dev/video*
 cd mrcnn
 ```
-There are 2 modes in [video.py](mrcnn/video.py): one for recording with webcam and live detection (unfortunately, it lags and it's slow ~1FPS, possibly because detection code is not optimized). To use it, type:
+There are 2 modes in [video.py](mrcnn/video.py): the first one is for recording with webcam and live detection (unfortunately, it lags and it's slow ~1FPS, possibly because detection code is not optimized). To use it, type:
 ```
 python3 ./video.py --video_pointer=`number assigned to your webcam`
 ```
@@ -80,7 +82,7 @@ If default webcam resolution is unsupported, check available resolutions this wa
 sudo apt install uvcdynctrl
 uvcdynctrl -f
 ```
-... and the other mode is for detection in downloaded video files. Put video file, in which you want to do detection task in *test_videos* directory, then type:
+... and the other mode is for detection in downloaded video files. Put video file, for which you want to do detection task in *test_videos* directory, then type:
 ```
 python3 ./video.py --video_pointer=`path_to_your_video`
 ```
