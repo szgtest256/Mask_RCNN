@@ -31,7 +31,7 @@ python3 setup.py install
 Our objective is to use well-performing model for face detection (displaying confidence scores) in short videos.
 
 
-Download and extract modified version of Wider Face dataset (out-of-bounds bboxes and negative examples removed) converted to COCO format in [datasets](datasets): 
+Download and extract modified version of Wider Face dataset (out-of-bounds bboxes and negative examples removed) converted to COCO format in *datasets*: 
 https://drive.google.com/file/d/1jnf-XTzUMbjniBkZMjnNDXfiGDyXw8eW/view?usp=sharing
 
 
@@ -56,7 +56,7 @@ When training is complete and final model saved in [logs](logs), you can evaluat
 ```
 python3 widerface.py evaluate --model=last --limit=0
 ```
-If you don't want to train a model or you simply want to compare models, I provide a few models trained on WiderFace to download. Extract them to [logs](logs):
+If you don't want to train a model or you simply want to compare models, I provide a few models trained on WiderFace to download. Extract them to *logs*:
 https://drive.google.com/file/d/1kXPfvilOYR2Cfsg93OitQUr8IAVwtY3y/view?usp=sharing
 Last model from previous tar archive:
 https://drive.google.com/file/d/17BLpt-rkOEQ4OP1BFzav4r4rXJGkD2mx/view?usp=sharing
@@ -80,7 +80,7 @@ If default webcam resolution is unsupported, check available resolutions this wa
 sudo apt install uvcdynctrl
 uvcdynctrl -f
 ```
-... and the other mode is for detection in downloaded video files. Put video file, in which you want to do detection task in test_videos directory, then type:
+... and the other mode is for detection in downloaded video files. Put video file, in which you want to do detection task in *test_videos* directory, then type:
 ```
 python3 ./video.py --video_pointer=`path_to_your_video`
 ```
@@ -89,7 +89,7 @@ If you encounter problems with codecs or webcam, you can try to debug by running
 python3 ./try_video.py
 ```
 
-For comparison purposes, I provide some example videos to extract to [test_videos](test_videos):
+For comparison purposes, I provide some example videos to extract to *test_videos*:
 https://drive.google.com/file/d/1NSJS6PL3JJse3lkRIugJ4GrQb4_j99Dp/view?usp=sharing
 
 I hope, that this short guide was somehow helpful.
