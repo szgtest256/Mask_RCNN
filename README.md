@@ -1,7 +1,90 @@
 # Mask R-CNN for Object Detection and Segmentation
 
-This is an implementation of [Mask R-CNN](https://arxiv.org/abs/1703.06870) on Python 3, Keras, and TensorFlow. The model generates bounding boxes and segmentation masks for each instance of an object in the image. It's based on Feature Pyramid Network (FPN) and a ResNet101 backbone.
+Originally, this was an implementation of only [Mask R-CNN](https://arxiv.org/abs/1703.06870) on Python 3, Keras, and TensorFlow. In order to train on datasets, which do not contain image segmentation, I have decided to downgrade the network to [Faster R-CNN](https://arxiv.org/abs/1506.01497) (and make this configuration default), because it requires only bounding boxes annotations. The model generates predictions of bounding boxes for each instance of an object in the image. It's based on Feature Pyramid Network (FPN) and a ResNet101 backbone.
 
+To give credit, where credit's due, congratulations for an outstanding work (especially fantastic .ipynb debuggers and easy-to-understand code) to the team of Matterport. My project is essentially a deep modification of your Mask R-CNN implementation. https://github.com/matterport/Mask_RCNN
+
+# Brief installation guide for Linux
+For GPU users:
+Example CUDA/CUDNN configuration:
+CUDA 10.1
+CUDNN 7.6.4
+Their versions need to be compatible with both tensorflow-gpu and keras versions. At least 6GB or more VRAM might be needed for training the model.
+
+```
+git clone [this repo]
+```
+Create and activate python3.6 virtual environment, then:
+```
+pip3 install -r requirements.txt
+# Additionally, we need to install pycocotools:
+git clone [mycoco]
+cd coco/PythonAPI
+make install
+cd ../../
+mkdir datasets logs test_videos 
+python3 setup.py install
+```
+
+# Training example: face detection using Wider Face dataset
+
+Our objective is to use well-performing model for face detection (displaying confidence scores) in short videos.
+
+
+Download modified version of Wider Face dataset (out-of-bounds bboxes and negative examples removed) converted to COCO format: 
+TODO:link
+
+
+I strongly advise to run 3 notebooks: [inspect_data-wider.ipynb](samples/coco/inspect_data-wider.ipynb),  [inspect_model-wider.ipynb](samples/coco/inspect_model-wider.ipynb), [inspect_weights-forwider.ipynb](samples/coco/inspect_weights-forwider.ipynb) to check for any errors before the training.
+Familiarize yourself with *Config* if i.e. you want to change *batch_size* or other variables.
+*config.GENERATE_MASKS=False* means, that network is downgraded to Faster R-CNN and therefore prepared for training on Wider Face dataset, which does not contain image segmentation.
+
+In addition, it is recommended to check if augmentation is suitable for your purposes (*load_image_gt* function in [model.py](mrcnn/model.py). If so, you can commence the training, starting from pre-trained COCO weights:
+```
+cd samples/coco
+python3 widerface.py train --model=coco
+```
+To monitor training, you can use Tensorboard
+```
+tensorboard --logdir=./logs
+```
+Weights are saved after every epoch. If needed, you can easily restart the training:
+```
+python3 widerface.py train --model=last
+```
+When training is complete and final model saved in [logs](logs), you can evaluate the results. Check trained model first by running file [inspect_model-wider.ipynb](samples/coco/inspect_model-wider.ipynb), then investigate results more thoroughly with:
+```
+python3 widerface.py evaluate --model=last --limit=0
+```
+[This site](https://cocodataset.org/#detection-eval) explains the exact meaning of displayed shortcuts.
+# Face detection in videos and through webcam
+If results are deemed acceptable, trained model can be used to detect faces in downloaded videos. Firstly, ffmpeg package must be installed if you want to preserve audio after frame-by-frame detection (opencv doesn't have this functionality):
+```
+sudo apt update
+sudo apt install ffmpeg
+# If you're unsure which number system assigned to your camera:
+ls -ltrh /dev/video*
+cd mrcnn
+```
+There are 2 modes in [video.py](mrcnn/video.py): one for recording with webcam and live detection (unfortunately, it lags and it's slow ~1FPS, possibly because detection code is not optimized). To use it, type:
+```
+python3 ./video.py --video_pointer=`number assigned to your webcam`
+```
+If default webcam resolution is unsupported, check available resolutions this way:
+```
+sudo apt install uvcdynctrl
+uvcdynctrl -f
+```
+... and the other mode is for detection in downloaded video files. Put video file, in which you want to do detection task in test_videos directory, then type:
+```
+python3 ./video.py --video_pointer=`path_to_your_video`
+```
+If you encounter problems with codecs or webcam, you can try to debug by running:
+```
+python3 ./try_video.py
+```
+
+# Original README by *matterport*
 ![Instance Segmentation Sample](assets/street.png)
 
 The repository includes:
