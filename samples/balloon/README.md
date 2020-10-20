@@ -1,7 +1,7 @@
 # Color Splash Example
 
 This is an example showing the use of Mask RCNN in a real application.
-We train the model to detect balloons only, and then we use the generated 
+We train the model to detect balloons only, and then we use the generated
 masks to keep balloons in color while changing the rest of the image to
 grayscale.
 
@@ -50,5 +50,5 @@ Train a new model starting from ImageNet weights
 python3 balloon.py train --dataset=/path/to/balloon/dataset --weights=imagenet
 ```
 
-The code in `balloon.py` is set to train for 3K steps (30 epochs of 100 steps each), and using a batch size of 2. 
+The code in `balloon.py` is set to train for 3K steps (30 epochs of 100 steps each), and using a batch size of 2.
 Update the schedule to fit your needs.

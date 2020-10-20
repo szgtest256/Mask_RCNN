@@ -4,11 +4,11 @@ Originally, this was an implementation of only [Mask R-CNN](https://arxiv.org/ab
 
 To give credit, where credit's due, congratulations for an outstanding work (especially fantastic .ipynb debuggers and easy-to-understand code) to the team of Matterport. My project is essentially a deep modification of your Mask R-CNN implementation. https://github.com/matterport/Mask_RCNN
 
-# Brief installation guide for Linux
-For GPU users:
-Example CUDA/CUDNN configuration:
-CUDA 10.1
-CUDNN 7.6.4
+# Brief installation guide for Linux  
+For GPU users:  
+Example CUDA/CUDNN configuration:  
+CUDA 10.1  
+CUDNN 7.6.4  
 Their versions need to be compatible with both tensorflow-gpu and keras versions. At least 6GB or more VRAM might be necessary to train the model.
 
 ```
@@ -22,7 +22,7 @@ git clone https://github.com/szgtest/coco.git
 cd coco/PythonAPI
 make install
 cd ../../
-mkdir datasets logs test_videos 
+mkdir datasets logs test_videos
 python3 setup.py install
 ```
 
@@ -30,12 +30,19 @@ python3 setup.py install
 
 Our objective is to use well-performing model for face detection (displaying confidence scores) in short videos.
 
+Download and extract COCO pre-trained (on Mask R-CNN) weights to project root directory:  
+https://drive.google.com/file/d/1jGYKmgS4AOPBlNcCIJ35DcXCyaoJ0ari/view?usp=sharing
 
 Download and extract modified version of Wider Face dataset (out-of-bounds bboxes and negative examples removed) converted to COCO format in *datasets*:   
 https://drive.google.com/file/d/1jnf-XTzUMbjniBkZMjnNDXfiGDyXw8eW/view?usp=sharing
 
+I provide a few models trained on WiderFace to download. Extract them to *logs*:  
+https://drive.google.com/file/d/1kXPfvilOYR2Cfsg93OitQUr8IAVwtY3y/view?usp=sharing  
+Last model from previous tar archive (download only if one from above link has been corrupted):  
+https://drive.google.com/file/d/17BLpt-rkOEQ4OP1BFzav4r4rXJGkD2mx/view?usp=sharing
 
-I strongly advise to run 3 notebooks: [inspect_data-wider.ipynb](samples/coco/inspect_data-wider.ipynb),  [inspect_model.ipynb](samples/coco/inspect_model.ipynb), [inspect_weights-forwider.ipynb](samples/coco/inspect_weights-forwider.ipynb) to check for any errors before the training.  
+
+I strongly advise to run 3 notebooks: [inspect_data-wider.ipynb](samples/coco/inspect_data-wider.ipynb),  [inspect_model-wider.ipynb](samples/coco/inspect_model-wider.ipynb), [inspect_weights-forwider.ipynb](samples/coco/inspect_weights-forwider.ipynb) to check for any errors before the training.  
 
 Familiarize yourself with *Config* if i.e. you want to change *batch_size* or other variables.  
 *config.GENERATE_MASKS=False* means, that network is downgraded to Faster R-CNN and therefore prepared for training on Wider Face dataset, which does not contain image segmentation.
@@ -57,13 +64,8 @@ When training is complete and final model saved in *logs*, you can evaluate the 
 ```
 python3 widerface.py evaluate --model=last --limit=0
 ```
-[This site](https://cocodataset.org/#detection-eval) explains the exact meaning of displayed shortcuts. 
+[This site](https://cocodataset.org/#detection-eval) explains the exact meaning of displayed shortcuts.
 
-If you don't want to train a model or you simply want to compare models, I provide a few models trained on WiderFace to download. Extract them to *logs*:  
-https://drive.google.com/file/d/1kXPfvilOYR2Cfsg93OitQUr8IAVwtY3y/view?usp=sharing  
-Last model from previous tar archive:  
-https://drive.google.com/file/d/17BLpt-rkOEQ4OP1BFzav4r4rXJGkD2mx/view?usp=sharing
- 
 # Face detection in videos and through webcam
 If results are deemed acceptable, trained model can be used to detect faces in downloaded videos. Firstly, ffmpeg package must be installed if you want to preserve audio after frame-by-frame detection (opencv doesn't have this functionality):
 ```
@@ -121,7 +123,7 @@ It includes code to run object detection and instance segmentation on arbitrary 
 
 * [train_shapes.ipynb](samples/shapes/train_shapes.ipynb) shows how to train Mask R-CNN on your own dataset. This notebook introduces a toy dataset (Shapes) to demonstrate training on a new dataset.
 
-* ([model.py](mrcnn/model.py), [utils.py](mrcnn/utils.py), [config.py](mrcnn/config.py)): These files contain the main Mask RCNN implementation. 
+* ([model.py](mrcnn/model.py), [utils.py](mrcnn/utils.py), [config.py](mrcnn/config.py)): These files contain the main Mask RCNN implementation.
 
 
 * [inspect_data.ipynb](samples/coco/inspect_data.ipynb). This notebook visualizes the different pre-processing steps
@@ -134,7 +136,7 @@ This notebooks inspects the weights of a trained model and looks for anomalies a
 
 
 # Step by Step Detection
-To help with debugging and understanding the model, there are 3 notebooks 
+To help with debugging and understanding the model, there are 3 notebooks
 ([inspect_data.ipynb](samples/coco/inspect_data.ipynb), [inspect_model.ipynb](samples/coco/inspect_model.ipynb),
 [inspect_weights.ipynb](samples/coco/inspect_weights.ipynb)) that provide a lot of visualizations and allow running the model step by step to inspect the output at each point. Here are a few examples:
 
@@ -214,11 +216,11 @@ In summary, to train the model on your own dataset you'll need to extend two cla
 This class contains the default configuration. Subclass it and modify the attributes you need to change.
 
 ```Dataset```
-This class provides a consistent way to work with any dataset. 
-It allows you to use new datasets for training without having to change 
+This class provides a consistent way to work with any dataset.
+It allows you to use new datasets for training without having to change
 the code of the model. It also supports loading multiple datasets at the
-same time, which is useful if the objects you want to detect are not 
-all available in one dataset. 
+same time, which is useful if the objects you want to detect are not
+all available in one dataset.
 
 See examples in `samples/shapes/train_shapes.ipynb`, `samples/coco/coco.py`, `samples/balloon/balloon.py`, and `samples/nucleus/nucleus.py`.
 
@@ -229,12 +231,12 @@ This implementation follows the Mask RCNN paper for the most part, but there are
 * **Bounding Boxes**: Some datasets provide bounding boxes and some provide masks only. To support training on multiple datasets we opted to ignore the bounding boxes that come with the dataset and generate them on the fly instead. We pick the smallest box that encapsulates all the pixels of the mask as the bounding box. This simplifies the implementation and also makes it easy to apply image augmentations that would otherwise be harder to apply to bounding boxes, such as image rotation.
 
     To validate this approach, we compared our computed bounding boxes to those provided by the COCO dataset.
-We found that ~2% of bounding boxes differed by 1px or more, ~0.05% differed by 5px or more, 
+We found that ~2% of bounding boxes differed by 1px or more, ~0.05% differed by 5px or more,
 and only 0.01% differed by 10px or more.
 
 * **Learning Rate:** The paper uses a learning rate of 0.02, but we found that to be
 too high, and often causes the weights to explode, especially when using a small batch
-size. It might be related to differences between how Caffe and TensorFlow compute 
+size. It might be related to differences between how Caffe and TensorFlow compute
 gradients (sum vs mean across batches and GPUs). Or, maybe the official model uses gradient
 clipping to avoid this issue. We do use gradient clipping, but don't set it too aggressively.
 We found that smaller learning rates converge faster anyway so we go with that.
@@ -285,7 +287,7 @@ If you use Docker, the code has been verified to work on
 3. Run setup from the repository root directory
     ```bash
     python3 setup.py install
-    ``` 
+    ```
 3. Download pre-trained COCO weights (mask_rcnn_coco.h5) from the [releases page](https://github.com/matterport/Mask_RCNN/releases).
 4. (Optional) To train or test on MS COCO install `pycocotools` from one of these repos. They are forks of the original pycocotools with fixes for Python3 and Windows (the official repo doesn't seem to be active anymore).
 
