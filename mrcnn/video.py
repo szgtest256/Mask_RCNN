@@ -51,7 +51,7 @@ def do_detect(frame, model, dataset):
         #random_colors_tuple = tuple(int(el) for el in visualize.random_colors(N)[i])[::-1] #int tuple BGR
         colors_tuple = (0,0,0)
 
-        print('random_colors_tuple:',random_colors_tuple)
+        #print('random_colors_tuple:',random_colors_tuple)
         class_id = r['class_ids'][i]
         score = r['scores'][i]
         label = dataset.class_names[class_id]

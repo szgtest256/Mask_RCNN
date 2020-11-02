@@ -25,6 +25,7 @@ import keras.engine as KE
 import keras.models as KM
 import imgaug.augmentables as iaables
 import imgaug.augmenters as iaa
+import imgaug.parameters as iap
 
 from mrcnn import utils
 
@@ -1266,9 +1267,22 @@ def load_image_gt(dataset, config, image_id, augment=False, augmentation=None,
 
     # Random horizontal flips.
     # TODO: will be removed in a future update in favor of augmentation
+    aug_type = 'combine'
     if augment:
-        seq = iaa.Sequential([iaa.Fliplr(p=0.4)],)  #construct aug pipeline
-        bbox_formatted=np.copy(bbox)
+        if aug_type == 'fliplr':
+            seq = iaa.Sequential([iaa.Fliplr(p=0.4)])  #construct aug pipeline
+        elif aug_type == 'rotate':
+            seq = iaa.Sequential([iaa.Rotate(rotate=iap.Uniform((-30,0),(0,30)))])
+        elif aug_type == 'translate':
+            seq = iaa.Sequential([iaa.TranslateX(px=(-100,100)), iaa.TranslateY(px=(-100,100))])
+        elif aug_type == 'blur':
+            seq = iaa.Sequential([iaa.GaussianBlur(sigma=iap.Uniform((0.0,1.5),(1.5,3.0)))])
+        elif aug_type == 'brighten':
+            seq = iaa.Sequential([iaa.MultiplyBrightness(mul=iap.Uniform((0.5,1),(1,1.5)))])
+        elif aug_type == 'combine':
+            seq = iaa.Sometimes(p=1, then_list=iaa.SomeOf(n=(1,4), children=[iaa.Fliplr(p=1), iaa.MultiplyBrightness(mul=iap.Uniform((0.5,1),(1,1.5))),
+                    iaa.GaussianBlur(sigma=iap.Uniform((0.0,1.5),(1.5,3.0))), iaa.Rotate(rotate=iap.Uniform((-30,0),(0,30)))], random_order=False))
+        bbox_formatted = np.copy(bbox)
         for i in range(len(bbox)):  #format bbox to normal format x1,x2,y1,y2 from y1,x1,y2,x2
             bbox_formatted[i,0] = bbox[i,1]
             bbox_formatted[i,1] = bbox[i,0]
@@ -1278,10 +1292,19 @@ def load_image_gt(dataset, config, image_id, augment=False, augmentation=None,
         #for i in range(len(bbox_formatted)):
         #    bbs_to_aug_list.append(iaa.bbs.BoundingBox.from_point_soup(bbox_formatted[i]))
         #bbs_to_aug=iaa.bbs.BoundingBoxesOnImage(bbs_to_aug_list)
-        bbs_to_aug=iaables.bbs.BoundingBoxesOnImage.from_xyxy_array(bbox_formatted, image.shape)
+        bbs_to_aug = iaables.bbs.BoundingBoxesOnImage.from_xyxy_array(bbox_formatted, image.shape)
         image_aug, bbox_aug = seq(image=image, bounding_boxes=bbs_to_aug)
-        bbox_after_aug=bbox_aug.to_xyxy_array(dtype=np.float32)
+        bbox_after_aug = bbox_aug.to_xyxy_array(dtype=np.float32)
         #print(bbox_after_aug)
+
+        if not aug_type == 'fliplr':
+            rowsToRemoveList=[]
+            for i in range(len(bbox_after_aug)):
+                for j in range(4):
+                    if bbox_after_aug[i,j] < 0 or bbox_after_aug[i,j] > 1023:
+                        rowsToRemoveList.append(i)
+            bbox_after_aug = np.delete(bbox_after_aug, rowsToRemoveList, axis=0)
+
 
         for i in range(len(bbox_after_aug)):
             bbox[i,0] = bbox_after_aug[i,1]
@@ -1289,7 +1312,9 @@ def load_image_gt(dataset, config, image_id, augment=False, augmentation=None,
             bbox[i,2] = bbox_after_aug[i,3]
             bbox[i,3] = bbox_after_aug[i,2]
 
-        image=image_aug
+
+
+        image = image_aug
 
         active_class_ids = np.zeros([dataset.num_classes], dtype=np.int32)
         source_class_ids = dataset.source_class_ids[dataset.image_info[image_id]["source"]]
