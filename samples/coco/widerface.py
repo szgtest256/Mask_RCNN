@@ -337,6 +337,21 @@ def evaluate_coco(model, dataset, coco, eval_type="bbox", limit=0, image_ids=Non
         t_prediction, t_prediction / len(image_ids)))
     print("Total time: ", time.time() - t_start)
 
+def rmv_imgs_with_many_faces(dataset, max_anns):
+    len_annotations = []
+    for i, item in enumerate(dataset.image_info):
+        len_annotations.append(len(item['annotations']))
+
+    ind_rmv = []
+    exceeding_anns = []
+    for i, anns in enumerate(len_annotations):
+        if anns > max_anns:
+            exceeding_anns.append(anns)
+            ind_rmv.append(i)
+
+    dataset._image_ids = np.delete(dataset._image_ids, ind_rmv)
+    dataset.num_images = len(dataset.image_ids)
+
 
 ############################################################
 #  Training
@@ -417,16 +432,19 @@ if __name__ == '__main__':
 
     # Train or evaluate
     if args.command == "train":
+        max_anns = 100
         # Training dataset. Use the training set and 35K from the
         # validation set, as as in the Mask RCNN paper.
         dataset_train = CocoDataset()
         dataset_train.load_coco(args.dataset, "train")
         dataset_train.prepare()
+        rmv_imgs_with_many_faces(dataset_train, max_anns)
 
         # Validation dataset
         dataset_val = CocoDataset()
         dataset_val.load_coco(args.dataset, "val")
         dataset_val.prepare()
+        rmv_imgs_with_many_faces(dataset_val, max_anns)
 
         # Image Augmentation
         # Right/Left flip 50% of the time

@@ -1267,7 +1267,7 @@ def load_image_gt(dataset, config, image_id, augment=False, augmentation=None,
 
     # Random horizontal flips.
     # TODO: will be removed in a future update in favor of augmentation
-    aug_type = 'combine'
+    aug_type = 'combine2'
     if augment:
         if aug_type == 'fliplr':
             seq = iaa.Sequential([iaa.Fliplr(p=0.4)])  #construct aug pipeline
@@ -1282,6 +1282,9 @@ def load_image_gt(dataset, config, image_id, augment=False, augmentation=None,
         elif aug_type == 'combine':
             seq = iaa.Sometimes(p=1, then_list=iaa.SomeOf(n=(1,4), children=[iaa.Fliplr(p=1), iaa.MultiplyBrightness(mul=iap.Uniform((0.5,1),(1,1.5))),
                     iaa.GaussianBlur(sigma=iap.Uniform((0.0,1.5),(1.5,3.0))), iaa.Rotate(rotate=iap.Uniform((-30,0),(0,30)))], random_order=False))
+        elif aug_type == 'combine2':
+            seq = iaa.Sometimes(p=1, then_list=iaa.SomeOf(n=(1,4), children=[iaa.Fliplr(p=1), iaa.MultiplyBrightness(mul=iap.Uniform(0.5,1.5)),
+                    iaa.GaussianBlur(sigma=iap.Uniform(0.0, 3.0)), iaa.Rotate(rotate=iap.Uniform(-30, 30))], random_order=False))
         bbox_formatted = np.copy(bbox)
         for i in range(len(bbox)):  #format bbox to normal format x1,x2,y1,y2 from y1,x1,y2,x2
             bbox_formatted[i,0] = bbox[i,1]

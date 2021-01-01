@@ -888,7 +888,7 @@ def compute_ap(gt_boxes, gt_class_ids,
 
 def compute_ap_range(gt_box, gt_class_id,
                      pred_box, pred_class_id, pred_score, config,
-                     iou_thresholds=None, verbose=1, gt_mask=None, pred_mask=None):
+                     iou_thresholds=None, verbose=0, gt_mask=None, pred_mask=None):
     """Compute AP over a range or IoU thresholds. Default range is 0.5-0.95."""
     # Default is 0.5 to 0.95 with increments of 0.05
     iou_thresholds = iou_thresholds or np.arange(0.5, 1.0, 0.05)
@@ -899,7 +899,7 @@ def compute_ap_range(gt_box, gt_class_id,
         ap, precisions, recalls, overlaps =\
             compute_ap(gt_box, gt_class_id,
                         pred_box, pred_class_id, pred_score, config,
-                        iou_threshold=iou_threshold, gt_mask=gt_mask, pred_mask=pred_mask)
+                        iou_threshold=iou_threshold, gt_masks=gt_mask, pred_masks=pred_mask)
         if verbose:
             print("AP @{:.2f}:\t {:.3f}".format(iou_threshold, ap))
         AP.append(ap)
@@ -927,6 +927,25 @@ def compute_recall(pred_boxes, gt_boxes, iou):
     recall = len(set(matched_gt_boxes)) / gt_boxes.shape[0]
     return recall, positive_ids
 
+
+def compute_ar_range(pred_boxes, gt_boxes, iou_thresholds=None):
+    """Compute AP over a range or IoU thresholds. Default range is 0.5-0.95."""
+    # Default is 0.5 to 0.95 with increments of 0.05
+    iou_thresholds = iou_thresholds or np.arange(0.5, 1.0, 0.05)
+
+    # Compute AP over range of IoU thresholds
+    AR = []
+    for iou_threshold in iou_thresholds:
+        ar, positive_ids =\
+            compute_recall(pred_boxes, gt_boxes, iou_threshold)
+        #if verbose:
+        #    print("AP @{:.2f}:\t {:.3f}".format(iou_threshold, ar))
+        AR.append(ar)
+    AR = np.array(AR).mean()
+    #if verbose:
+    #    print("AR @{:.2f}-{:.2f}:\t {:.3f}".format(
+    #        iou_thresholds[0], iou_thresholds[-1], AR))
+    return AR
 
 # ## Batch Slicing
 # Some custom layers support a batch size of 1 only, and require a lot of work
